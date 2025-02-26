@@ -17,10 +17,11 @@ model = BoneFractureCNN(num_classes=7).to(device)
 
 # Définition de la fonction de perte et de l'optimiseur
 criterion = nn.CrossEntropyLoss()
-optimizer = optim.Adam(model.parameters(), lr=0.001)
+optimizer = optim.Adam(model.parameters(), lr=0.01)
+#scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=5, gamma=0.5)
 
 # Nombre d'epochs
-num_epochs = 10
+num_epochs = 20
 
 # Tensorboard
 writer = SummaryWriter(log_dir="runs/bone_fracture_experiment")
@@ -42,6 +43,7 @@ for epoch in range(num_epochs):
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
+        #scheduler.step()
         
         running_loss += loss.item()
         _, predicted = torch.max(outputs, 1)
@@ -80,7 +82,7 @@ for epoch in range(num_epochs):
           f"Valid Loss: {valid_epoch_loss:.4f}, Valid Accuracy: {valid_epoch_accuracy:.2f}%")
 
 # Sauvegarde du modèle
-model_path = "models/bone_fracture_cnn.pth"
+model_path = "models/bone_fracture_cnn_BN.pth"
 os.makedirs("models", exist_ok=True)  # Crée le dossier models s'il n'existe pas
 torch.save(model.state_dict(), model_path)
 print(f"Modèle sauvegardé sous {model_path}")
