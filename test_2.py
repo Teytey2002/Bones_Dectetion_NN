@@ -79,5 +79,5 @@ dataiter = iter(train_loader)
 images, labels = next(dataiter)
 
 # Affichage des images
-imshow(torchvision.utils.make_grid(images[:1]))  # Afficher 1 images
-print("Labels associés : ", labels[:1])  # Afficher les labels
+imshow(torchvision.utils.make_grid(images[:5]))  # Afficher 1 images
+print("Labels associés : ", labels[:5])  # Afficher les labels
