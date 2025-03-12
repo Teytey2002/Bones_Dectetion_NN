@@ -6,7 +6,7 @@ from torchvision import transforms
 from PIL import Image
 
 # Chemin du dataset (à modifier si besoin)
-data_dir = r'C:\Users\theod\OneDrive\Documents\ULB\Ma1\Project_Bones\DataSet\BoneFractureYolo8\train'  # Change ce chemin !
+data_dir = r'C:\Users\theod\OneDrive\Documents\ULB\Ma1\Project_Bones\DataSet\BoneFractureYolo8\train'  
 image_dir = os.path.join(data_dir, "images")
 label_dir = os.path.join(data_dir, "labels")
 

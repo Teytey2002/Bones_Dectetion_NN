@@ -12,7 +12,7 @@ print(f"Testing on: {device}")
 
 # Charger le modèle
 model = BoneFractureCNN(num_classes=7).to(device)
-model.load_state_dict(torch.load("models/bone_fracture_cnn.pth"))  # Charger le modèle sauvegardé
+model.load_state_dict(torch.load("models/bone_fracture_cnn_dropout_conv3.pth"))  # Charger le modèle sauvegardé
 model.eval()  # Mode évaluation
 print("Modèle chargé et prêt pour le test.")
 
@@ -56,6 +56,6 @@ outputs = model(images)
 _, predicted = torch.max(outputs, 1)
 
 # Affichage
-imshow(torchvision.utils.make_grid(images.cpu()[:8]))
-print("Labels réels :", labels.cpu().numpy()[:8])
-print("Prédictions :", predicted.cpu().numpy()[:8])
+imshow(torchvision.utils.make_grid(images.cpu()[:3]))
+print("Labels réels :", labels.cpu().numpy()[:3])
+print("Prédictions :", predicted.cpu().numpy()[:3])
