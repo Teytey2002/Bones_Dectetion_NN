@@ -22,6 +22,7 @@ train_transform = transforms.Compose([
     transforms.RandomPerspective(distortion_scale=0.2, p=0.5),  # Distorsion légère
     transforms.ColorJitter(brightness=0.2, contrast=0.2),  # Variations de couleur
     transforms.ToTensor(),
+    #transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5])
     transforms.Normalize(mean=[0.5], std=[0.5])
 ])
 
