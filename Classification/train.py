@@ -21,10 +21,10 @@ optimizer = optim.Adam(model.parameters(), lr=0.001)
 #scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=5, gamma=0.5)
 
 # Nombre d'epochs
-num_epochs = 50
+num_epochs = 1000
 
 # Tensorboard
-writer = SummaryWriter(log_dir="runs/bone_fracture_experiment/bone_fracture_cnn_dp_cv3_v3")
+writer = SummaryWriter(log_dir="runs/bone_fracture_experiment/bone_fracture_cnn_dp_cv3_6classes")
 
 # Entraînement du modèle
 for epoch in range(num_epochs):
@@ -82,7 +82,7 @@ for epoch in range(num_epochs):
           f"Valid Loss: {valid_epoch_loss:.4f}, Valid Accuracy: {valid_epoch_accuracy:.2f}%")
 
 # Sauvegarde du modèle
-model_path = "models/bone_fracture_cnn_dp_cv3_v2.pth"
+model_path = "models/Classification/bone_fracture_cnn_dp_cv3_1000Epoch.pth"
 os.makedirs("models", exist_ok=True)  # Crée le dossier models s'il n'existe pas
 torch.save(model.state_dict(), model_path)
 print(f"Modèle sauvegardé sous {model_path}")
