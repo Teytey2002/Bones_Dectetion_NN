@@ -55,7 +55,7 @@ def show_comparison(image, label, pred_class, pred_bbox):
     plt.show()
 
 # Tester quelques images
-num_samples = 5
+num_samples = 10
 for i in range(num_samples):
     image, label = test_dataset[i]
     # Vérifier si l'image est déjà un tensor, sinon la convertir en PIL.Image

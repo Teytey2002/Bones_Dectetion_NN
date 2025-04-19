@@ -3,7 +3,7 @@ import torch.nn as nn
 import torchvision
 import numpy as np
 import matplotlib.pyplot as plt
-from Bones_Dectetion_NN.Classification.data_loader import test_loader  # Import du dataset test
+from data_loader import test_loader  # Import du dataset test
 from model import BoneFractureCNN  # Charger la même architecture
 
 # Vérifier si un GPU est disponible
@@ -12,7 +12,7 @@ print(f"Testing on: {device}")
 
 # Charger le modèle
 model = BoneFractureCNN(num_classes=7).to(device)
-model.load_state_dict(torch.load("models/bone_fracture_cnn_dp_cv3_v2.pth"))  # Charger le modèle sauvegardé
+model.load_state_dict(torch.load("models/Classification/best_model_classification85.pth"))  # Charger le modèle sauvegardé
 model.eval()  # Mode évaluation
 print("Modèle chargé et prêt pour le test.")
 
