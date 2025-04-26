@@ -2,53 +2,52 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 import os
-from data_loader_detection import train_loader, valid_loader  # Import du DataLoader adapté
-from model_detection import BoneFractureDetector  # Import du modèle de détection
+from data_loader_detection import train_loader, valid_loader
+from model_multitask import BoneFractureMultiTaskNet
+from torch.utils.tensorboard import SummaryWriter
 
-# Vérifier si un GPU est disponible
+# Configuration 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(f"Training on: {device}")
 
 # Initialisation du modèle
-num_classes = 7
-num_points = 4  # 4 points -> 8 coordonnées
-model = BoneFractureDetector(num_classes=num_classes, num_points=num_points).to(device)
+model = BoneFractureMultiTaskNet(num_classes=7, num_points=4).to(device)
 
-# Définition des fonctions de perte
-criterion_class = nn.CrossEntropyLoss()  # Classification
-criterion_bbox = nn.MSELoss()  # Prédiction des polygones
+# Fonctions de perte pour les deux tâches
+criterion_class = nn.CrossEntropyLoss()
+criterion_bbox = nn.MSELoss()
 
 # Optimiseur
 optimizer = optim.Adam(model.parameters(), lr=0.001)
 
-# Nombre d'epochs
-num_epochs = 20
+# TensorBoard
+writer = SummaryWriter(log_dir="runs_multitask/bone_fracture_multitask")
 
-# Dossier pour sauvegarder le modèle
-os.makedirs("models", exist_ok=True)
+# Early stopping
+patience = 20
+best_val_loss = float("inf")
+epochs_no_improve = 0
+epoch = 0
+model_path = "models/Multitask/bone_fracture_multitask.pth"
+os.makedirs(os.path.dirname(model_path), exist_ok=True)
 
-# Entraînement du modèle
-for epoch in range(num_epochs):
-    model.train()  # Mode entraînement
-    
+# Entraînement
+while True:
+    model.train()
     running_loss = 0.0
     correct = 0
     total = 0
-    
+
     for images, labels in train_loader:
         images, labels = images.to(device), labels.to(device)
+        class_labels = labels[:, 0].long()
+        bbox_labels = labels[:, 1:]
 
-        # Séparation des labels
-        class_labels = labels[:, 0].long()  # Classes (entiers)
-        bbox_labels = labels[:, 1:]  # Coordonnées du polygone (float)
-
-        # Prédictions du modèle
         class_preds, bbox_preds = model(images)
 
-        # Calcul des pertes
         loss_class = criterion_class(class_preds, class_labels)
         loss_bbox = criterion_bbox(bbox_preds, bbox_labels)
-        loss = loss_class + loss_bbox  # Somme des pertes
+        loss = loss_class + loss_bbox
 
         optimizer.zero_grad()
         loss.backward()
@@ -56,7 +55,6 @@ for epoch in range(num_epochs):
 
         running_loss += loss.item()
 
-        # Précision (classification)
         _, predicted = torch.max(class_preds, 1)
         correct += (predicted == class_labels).sum().item()
         total += class_labels.size(0)
@@ -64,7 +62,7 @@ for epoch in range(num_epochs):
     epoch_loss = running_loss / len(train_loader)
     epoch_accuracy = 100 * correct / total
 
-    # Phase de validation
+    # Validation
     model.eval()
     valid_loss = 0.0
     valid_correct = 0
@@ -73,7 +71,6 @@ for epoch in range(num_epochs):
     with torch.no_grad():
         for images, labels in valid_loader:
             images, labels = images.to(device), labels.to(device)
-
             class_labels = labels[:, 0].long()
             bbox_labels = labels[:, 1:]
 
@@ -92,10 +89,28 @@ for epoch in range(num_epochs):
     valid_epoch_loss = valid_loss / len(valid_loader)
     valid_epoch_accuracy = 100 * valid_correct / valid_total
 
-    print(f"Epoch [{epoch+1}/{num_epochs}], Loss: {epoch_loss:.4f}, Accuracy: {epoch_accuracy:.2f}%, "
-          f"Valid Loss: {valid_epoch_loss:.4f}, Valid Accuracy: {valid_epoch_accuracy:.2f}%")
+    # TensorBoard recording
+    writer.add_scalar("Loss/train", epoch_loss, epoch)
+    writer.add_scalar("Loss/valid", valid_epoch_loss, epoch)
+    writer.add_scalar("Accuracy/train", epoch_accuracy, epoch)
+    writer.add_scalar("Accuracy/valid", valid_epoch_accuracy, epoch)
 
-# Sauvegarde du modèle
-model_path = "models/bone_fracture_detection.pth"
-torch.save(model.state_dict(), model_path)
-print(f"Modèle sauvegardé sous {model_path}")
+    print(f"Epoch [{epoch+1}], Train Loss: {epoch_loss:.4f}, Valid Loss: {valid_epoch_loss:.4f}, \
+          Train Acc: {epoch_accuracy:.2f}%, Valid Acc: {valid_epoch_accuracy:.2f}%")
+    epoch += 1
+
+    # Early stopping
+    if valid_epoch_loss < best_val_loss:
+        best_val_loss = valid_epoch_loss
+        torch.save(model.state_dict(), model_path)
+        print(f"✅ Nouveau meilleur modèle sauvegardé (loss={best_val_loss:.4f})")
+        epochs_no_improve = 0
+    else:
+        epochs_no_improve += 1
+        print(f"⏸️ Pas d'amélioration depuis {epochs_no_improve} epoch(s)")
+
+    if epochs_no_improve >= patience:
+        print("🛑 Early stopping déclenché")
+        break
+
+writer.close()

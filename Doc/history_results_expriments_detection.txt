@@ -1,0 +1,65 @@
+Work on architecture 
+
+For conv3 withh da
+✅ Evaluation terminée :
+ - MSE moyen des polygones : 0.027253
+ - Distance moyenne entre points : 0.132709
+
+for conv4 with da
+✅ Evaluation terminée :
+ - MSE moyen des polygones : 0.026138
+ - Distance moyenne entre points : 0.128990
+
+For conv5 with da 
+✅ Evaluation terminée :
+ - MSE moyen des polygones : 0.028611
+ - Distance moyenne entre points : 0.136366
+
+
+ work on criterion 
+ All test before did with MSE 
+
+ Now try with SmoothL1Loss
+ ✅ Evaluation terminée :
+ - MSE moyen des polygones : 0.028755
+ - Distance moyenne entre points : 0.136327
+
+L1Loss 
+ ✅ Evaluation terminée :
+ - MSE moyen des polygones : 0.028229
+ - Distance moyenne entre points : 0.135035
+
+
+Keep SmoothL1Loss as optimizer.
+Now try to add scheduler 
+
+StepLR
+✅ Evaluation terminée :
+ - MSE moyen des polygones : 0.027225
+ - Distance moyenne entre points : 0.132698
+
+CosineAnnealingLR
+✅ Evaluation terminée :
+ - MSE moyen des polygones : 0.028783
+ - Distance moyenne entre points : 0.136316
+
+ReduceLROnPlateau
+✅ Evaluation terminée :
+ - MSE moyen des polygones : 0.028661
+ - Distance moyenne entre points : 0.136418
+
+ReduceLROnPlateau with better param 
+scheduler = optim.lr_scheduler.ReduceLROnPlateau(
+    optimizer,
+    mode='min',
+    patience=6,
+    factor=0.8,           # 🔧 Réduction douce
+    verbose=True,
+    threshold=1e-4        # évite de réagir aux fluctuations très faibles
+)
+✅ Evaluation terminée :
+ - MSE moyen des polygones : 0.028426
+ - Distance moyenne entre points : 0.133723
+
+
+We keep the ReduceLROnPlateau

@@ -4,17 +4,25 @@ import torch.optim as optim
 import os
 from data_loader_detection import train_loader, valid_loader
 from polygon_detection_model import PolygonDetector
+from torch.utils.tensorboard import SummaryWriter
 
+# Configuration 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(f"Training on: {device}")
-
 model = PolygonDetector(num_points=4).to(device)
-criterion = nn.MSELoss()
+criterion = nn.SmoothL1Loss()
 optimizer = optim.Adam(model.parameters(), lr=0.001)
-num_epochs = 20
-os.makedirs("models", exist_ok=True)
+scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min', patience=6, factor=0.8, verbose=True, threshold=1e-4)
+writer = SummaryWriter(log_dir="runs_detection/polygon_detector_ReduceLROnPlateau_2_withoutDA")    # Tensorboard
 
-for epoch in range(num_epochs):
+patience = 20
+best_val_loss = float("inf")
+epochs_no_improve = 0
+epoch = 0
+model_path = "models/Detection/polygon_detector_ReduceLROnPlateau_2_withoutDA.pth"
+
+# Train with Early stop
+while True:
     model.train()
     running_loss = 0.0
 
@@ -32,6 +40,7 @@ for epoch in range(num_epochs):
 
     epoch_loss = running_loss / len(train_loader)
 
+    # Validation
     model.eval()
     valid_loss = 0.0
     with torch.no_grad():
@@ -43,7 +52,27 @@ for epoch in range(num_epochs):
             valid_loss += loss.item()
 
     valid_epoch_loss = valid_loss / len(valid_loader)
-    print(f"Epoch [{epoch+1}/{num_epochs}], Train Loss: {epoch_loss:.4f}, Valid Loss: {valid_epoch_loss:.4f}")
+    scheduler.step(valid_epoch_loss)
 
-torch.save(model.state_dict(), "models/polygon_detector.pth")
-print("Model saved to models/polygon_detector.pth")
+    # Record curves on tensorboard
+    writer.add_scalar("Loss/train", epoch_loss, epoch)
+    writer.add_scalar("Loss/valid", valid_epoch_loss, epoch)
+    writer.add_scalar("LearningRate", optimizer.param_groups[0]['lr'], epoch)
+    print(f"Epoch [{epoch+1}], Train Loss: {epoch_loss:.4f}, Valid Loss: {valid_epoch_loss:.4f}")
+    epoch += 1
+    
+    # Early stopping
+    if valid_epoch_loss < best_val_loss:
+        best_val_loss = valid_epoch_loss
+        torch.save(model.state_dict(), model_path)
+        print(f"✅ Nouveau meilleur modèle sauvegardé (loss={best_val_loss:.4f})")
+        epochs_no_improve = 0
+    else:
+        epochs_no_improve += 1
+        print(f"⏸️ Pas d'amélioration depuis {epochs_no_improve} epoch(s)")
+
+    if epochs_no_improve >= patience:
+        print("🛑 Early stopping déclenché")
+        break
+
+writer.close() 

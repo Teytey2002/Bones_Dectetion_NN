@@ -4,15 +4,15 @@ import os
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 from torchvision import transforms
-from model_detection import BoneFractureDetector  # Import du modèle
-from data_loader_detection import test_dataset  # Import du dataset de test
+from Bones_Dectetion_NN.Detection_Classification.model_detection_classification import BoneFractureDetector  # Import du modèle
+from Bones_Dectetion_NN.Detection_Classification.data_loader_detection_classification import test_dataset  # Import du dataset de test
 
 # Vérifier si un GPU est disponible
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(f"Testing on: {device}")
 
 # Charger le modèle entraîné
-model_path = "models/bone_fracture_detection.pth"
+model_path = "models/Detection_Classification/bone_fracture_detection.pth"
 model = BoneFractureDetector(num_classes=7, num_points=4).to(device)
 model.load_state_dict(torch.load(model_path, map_location=device))
 model.eval()

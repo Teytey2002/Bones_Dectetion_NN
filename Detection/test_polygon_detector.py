@@ -9,13 +9,8 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(f"Testing on: {device}")
 
 model = PolygonDetector(num_points=4).to(device)
-model.load_state_dict(torch.load("models/polygon_detector.pth", map_location=device))
+model.load_state_dict(torch.load("models/Detection/polygon_detector_ReduceLROnPlateau_2.pth", map_location=device))
 model.eval()
-
-transform = transforms.Compose([
-    transforms.Resize((224, 224)),
-    transforms.ToTensor()
-])
 
 def show_result(image, label, pred_bbox):
     image = image.permute(1, 2, 0).numpy()
@@ -34,9 +29,9 @@ def show_result(image, label, pred_bbox):
     ax.axis("off")
     plt.show()
 
-for i in range(5):
+for i in range(15):
     image, label = test_dataset[i]
-    img_input = transform(transforms.ToPILImage()(image)).unsqueeze(0).to(device)
+    img_input = image.unsqueeze(0).to(device)
 
     with torch.no_grad():
         pred_bbox = model(img_input).squeeze().cpu().numpy()
