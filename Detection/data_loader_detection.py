@@ -3,13 +3,26 @@ import torch
 from torch.utils.data import Dataset, DataLoader
 from torchvision import transforms
 from PIL import Image
+from custom_transform_augmented import CustomTransform, CustomTestTransform
+image_size = 640   # Before was 224
+batch_size = 32    # Before was 32
 
-image_size = 224
-batch_size = 32
 
+
+#transform = CustomTransform(image_size=640)
+#test_transform = CustomTestTransform(image_size=640)
 transform = transforms.Compose([
     transforms.Resize((image_size, image_size)),
-    transforms.ToTensor()
+    #transforms.ColorJitter(brightness=0.2, contrast=0.2),  # Data Augmentation
+    #transforms.RandomRotation(10),  # Rotation légère
+    transforms.ToTensor(),
+    transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5])  
+])
+
+test_transform = transforms.Compose([   # Because no augmentation for test and validation
+    transforms.Resize((image_size, image_size)),
+    transforms.ToTensor(),
+    transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5])
 ])
 
 data_dir_train = r'C:\Users\theod\OneDrive\Documents\ULB\Ma1\Project_Bones\DataSet\BoneFractureYolo8\train'
@@ -44,16 +57,22 @@ class PolygonDetectionDataset(Dataset):
         coords = coords[:2 * self.num_points]
         label_tensor = torch.tensor([int(data[0])] + coords, dtype=torch.float32)
 
-        if self.transform:
+        if self.transform: 
             image = self.transform(image)
+
+        #if self.transform:     #For data augmentation
+        #    coords_tensor = torch.tensor(coords, dtype=torch.float32).reshape(-1, 2)
+        #    image, coords_tensor = self.transform(image, coords_tensor)
+        #    coords = coords_tensor.view(-1).tolist()
+
 
         return image, label_tensor
 
 train_dataset = PolygonDetectionDataset(root_dir=data_dir_train, transform=transform)
 train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
 
-valid_dataset = PolygonDetectionDataset(root_dir=data_dir_valid, transform=transform)
+valid_dataset = PolygonDetectionDataset(root_dir=data_dir_valid, transform=test_transform)
 valid_loader = DataLoader(valid_dataset, batch_size=batch_size, shuffle=False)
 
-test_dataset = PolygonDetectionDataset(root_dir=data_dir_test, transform=transform)
+test_dataset = PolygonDetectionDataset(root_dir=data_dir_test, transform=test_transform)
 test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)

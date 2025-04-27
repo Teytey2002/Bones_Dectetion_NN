@@ -14,7 +14,8 @@ class PolygonDetector(nn.Module):
         self.conv4 = nn.Conv2d(128, 256, kernel_size=3, padding=1)
         
         #self.flatten_size = 128 * (224 // 8) * (224 // 8)  # For conv3
-        self.flatten_size = 256 * (224 // 16) * (224 // 16) # For conv4
+        #self.flatten_size = 256 * (224 // 16) * (224 // 16) # For conv4
+        self.flatten_size = 256 * (640 // 16) * (640 // 16)
         self.fc1 = nn.Linear(self.flatten_size, 128)
         self.fc2 = nn.Linear(128, num_points * 2)
 

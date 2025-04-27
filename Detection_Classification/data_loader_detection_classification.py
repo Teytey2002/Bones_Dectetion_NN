@@ -7,7 +7,7 @@ from PIL import Image
 # Add for test bounding boxes on images
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
-
+import torchvision.transforms.functional as TF
 
 # Définition des transformations (Data Augmentation + Normalisation)
 image_size = 224  
@@ -18,7 +18,13 @@ transform = transforms.Compose([
     transforms.ColorJitter(brightness=0.2, contrast=0.2),  # Data Augmentation
     #transforms.RandomRotation(10),  # Rotation légère
     transforms.ToTensor(),
-    #transforms.Normalize(mean=[0.5], std=[0.5])  
+    transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5])  
+])
+
+test_transform = transforms.Compose([   # Because no augmentation for test and validation
+    transforms.Resize((image_size, image_size)),
+    transforms.ToTensor(),
+    transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5])
 ])
 
 # Chemin du dataset
@@ -75,79 +81,14 @@ class BoneFractureDetectionDataset(Dataset):
 train_dataset = BoneFractureDetectionDataset(root_dir=data_dir_train, transform=transform)
 train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
 
-valid_dataset = BoneFractureDetectionDataset(root_dir=data_dir_valid, transform=transform)
+valid_dataset = BoneFractureDetectionDataset(root_dir=data_dir_valid, transform=test_transform)
 valid_loader = DataLoader(valid_dataset, batch_size=batch_size, shuffle=False)
 
-test_dataset = BoneFractureDetectionDataset(root_dir=data_dir_test, transform=transform)
+test_dataset = BoneFractureDetectionDataset(root_dir=data_dir_test, transform=test_transform)
 test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
 
-# Vérification des données
-dataiter = iter(train_loader)
-images, labels = next(dataiter)
-
-print("Shape des images:", images.shape)  # [batch_size, 3, 224, 224]
-print("Labels associés:", labels[:5])  # Afficher quelques labels
 
 
 
 
 
-
-
-import matplotlib.pyplot as plt
-import torchvision.transforms.functional as TF
-
-# Charger une image du dataset
-image, label = train_dataset[0]
-
-# Affichage avant transformation
-plt.imshow(TF.to_pil_image(image))
-plt.title("Image après transformation")
-plt.axis("off")
-plt.show()
-
-
-def denormalize(tensor):
-    return tensor * 0.5 + 0.5  # Inversion de la normalisation
-
-image_tensor = denormalize(image)  # Appliquer avant affichage
-plt.imshow(image_tensor.permute(1, 2, 0).numpy())  # Convertir pour affichage
-plt.title("Image après denormalisation")
-plt.axis("off")
-plt.show()
-
-
-
-# Add for test bounding boxes on images
-
-# Fonction pour afficher une image avec le polygone associé
-def show_image_with_polygon(image, label, class_names):
-    image = image.permute(1, 2, 0).numpy()  # Permuter les axes pour l'affichage
-    fig, ax = plt.subplots(1)
-    ax.imshow(image)
-
-    class_id = int(label[0])  # Extraire la classe
-    coords = label[1:].reshape(-1, 2)  # Reshape en (N, 2) pour avoir les points (x, y)
-    
-    # Convertir les coordonnées normalisées en pixels
-    width, height = image.shape[1], image.shape[0]
-    polygon_points = [(x * width, y * height) for x, y in coords]
-
-    # Ajout du polygone
-    polygon = patches.Polygon(polygon_points, linewidth=2, edgecolor='r', facecolor='none')
-    ax.add_patch(polygon)
-
-    # Ajouter le texte de la classe en haut à droite
-    ax.text(width - 10, 10, class_names[class_id], 
-            color='white', fontsize=12, bbox=dict(facecolor='red', alpha=0.5), ha='right', va='top')
-
-    plt.axis("off")
-    plt.show()
-
-# Liste des noms des classes (correspondant au dataset YOLO)
-class_names = ['elbow positive', 'fingers positive', 'forearm fracture', 
-               'humerus fracture', 'humerus', 'shoulder fracture', 'wrist positive']
-
-# Afficher quelques images du batch avec leurs polygones
-for i in range(5):  # Afficher 5 images
-    show_image_with_polygon(images[i], labels[i], class_names)

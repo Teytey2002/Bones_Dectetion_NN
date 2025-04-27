@@ -1,0 +1,91 @@
+Training of : 
+
+    model = YOLO('yolov8n.pt')  
+
+    model.train(
+        data=r'C:\Users\theod\OneDrive\Documents\ULB\Ma1\Project_Bones\DataSet\BoneFractureYolo8\data.yaml',
+        epochs=100,
+        imgsz=640,
+        batch=16,
+        name='yolo_bones_v8n4',
+        project='runs/detect',
+        exist_ok=True,
+        patience=20,
+        optimizer='Adam',
+        verbose=True,
+        device=0,
+    )
+
+--> final Output 
+100 epochs completed in 0.594 hours.
+Optimizer stripped from runs\detect\yolo_bones_v8n4\weights\last.pt, 6.2MB
+Optimizer stripped from runs\detect\yolo_bones_v8n4\weights\best.pt, 6.2MB
+
+Validating runs\detect\yolo_bones_v8n4\weights\best.pt...
+Ultralytics 8.3.118  Python-3.12.2 torch-2.2.2+cu121 CUDA:0 (NVIDIA GeForce RTX 4060 Ti, 16380MiB)
+Model summary (fused): 72 layers, 3,007,013 parameters, 0 gradients, 8.1 GFLOPs
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 100%|██████████| 11/11 [00:01<00:00,  9.48it/s]
+                   all        348        204      0.257      0.206      0.173     0.0639
+        elbow positive         28         29      0.186      0.138      0.101     0.0523
+      fingers positive         41         48      0.228      0.188      0.135     0.0429
+      forearm fracture         37         43      0.335      0.372      0.315      0.108
+               humerus         31         36      0.394      0.306      0.354      0.143
+     shoulder fracture         19         20      0.201        0.2     0.0879     0.0282
+        wrist positive         17         28        0.2     0.0357     0.0441    0.00956
+Speed: 0.2ms preprocess, 0.9ms inference, 0.0ms loss, 0.9ms postprocess per image
+Results saved to runs\detect\yolo_bones_v8n4
+
+
+Mainteant on peut faire le test avec le test set : 
+Ultralytics 8.3.118  Python-3.12.2 torch-2.2.2+cu121 CUDA:0 (NVIDIA GeForce RTX 4060 Ti, 16380MiB)
+Model summary (fused): 72 layers, 3,007,013 parameters, 0 gradients, 8.1 GFLOPs
+val: Fast image access  (ping: 0.00.0 ms, read: 148.144.9 MB/s, size: 9.4 KB)
+val: Scanning C:\Users\theod\OneDrive\Documents\ULB\Ma1\Project_Bones\DataSet\BoneFractureYolo8\test\labels.cache... 169 images, 86 backgrounds, 0 corrupt: 100%|██████████| 169/169 [00:
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 100%|██████████| 11/11 [00:01<00:00,  8.29it/s]
+                   all        169         96      0.358      0.212      0.199     0.0681
+        elbow positive         13         17      0.205     0.0929     0.0822     0.0265
+      fingers positive         22         27      0.191      0.148     0.0791     0.0277
+      forearm fracture         13         14      0.778      0.429      0.442      0.151
+               humerus         14         15      0.523        0.2      0.236      0.074
+     shoulder fracture         15         17      0.176      0.235      0.182     0.0395
+        wrist positive          6          6      0.276      0.167       0.17     0.0894
+Speed: 0.8ms preprocess, 4.5ms inference, 0.0ms loss, 1.2ms postprocess per image
+Results saved to runs\detect\val4
+
+
+--> Conclusion c'est vraiment nul ahahha 
+
+
+
+On change pour partir sur le model s et pas n car il est plus performant même si il est plus lourd. On augmente aussi l'image size 
+    model = YOLO('yolov8s.pt')  
+
+    model.train(
+        data=r'C:\Users\theod\OneDrive\Documents\ULB\Ma1\Project_Bones\DataSet\BoneFractureYolo8\data.yaml',
+        epochs=150,
+        imgsz=800,
+        batch=16,
+        name='yolo_bones_v8_s',
+        project='runs/detect_s',
+        exist_ok=True,
+        patience=20,
+        optimizer='Adam',
+        verbose=True,
+        device=0,
+    )
+
+Mainteant on peut faire le test avec le test set : 
+Ultralytics 8.3.118  Python-3.12.2 torch-2.2.2+cu121 CUDA:0 (NVIDIA GeForce RTX 4060 Ti, 16380MiB)
+Model summary (fused): 72 layers, 11,128,293 parameters, 0 gradients, 28.5 GFLOPs
+val: Fast image access  (ping: 0.20.1 ms, read: 280.5499.1 MB/s, size: 34.9 KB)
+val: Scanning C:\Users\theod\OneDrive\Documents\ULB\Ma1\Project_Bones\DataSet\BoneFractureYolo8\test\labels.cache... 169 images, 86 backgrounds, 0 corrupt: 100%|████████
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 100%|██████████| 11/11 [00:02<00:00,  3.70it/s]
+                   all        169         96      0.185      0.194      0.135     0.0531
+        elbow positive         13         17      0.266      0.176     0.0988     0.0311
+      fingers positive         22         27      0.164     0.0741     0.0824     0.0203
+      forearm fracture         13         14      0.253      0.357      0.185     0.0808
+               humerus         14         15      0.193      0.272      0.156     0.0493
+     shoulder fracture         15         17      0.118      0.118      0.102     0.0286
+        wrist positive          6          6      0.117      0.167      0.186      0.109
+Speed: 4.2ms preprocess, 8.8ms inference, 0.0ms loss, 1.7ms postprocess per image
+Results saved to runs\detect\val5

@@ -1,0 +1,88 @@
+First test with 4 couches de conv
+----- ✅ Evaluation terminée -----
+Classification Accuracy: 48.19%
+SmoothL1 Loss Moyenne par point: 0.018304
+
+conv5
+----- ✅ Evaluation terminée -----
+Classification Accuracy: 57.83%
+SmoothL1 Loss Moyenne par point: 0.021670
+
+conv6 
+----- ✅ Evaluation terminée -----
+Classification Accuracy: 50.60%
+SmoothL1 Loss Moyenne par point: 0.016114
+
+conv7 
+----- ✅ Evaluation terminée -----
+Classification Accuracy: 61.45%
+SmoothL1 Loss Moyenne par point: 0.016968
+
+
+Quand j'ai voulu faire un train avec conv8 ça a crash j'ai atteint la limite du pooling. 
+Notion importante à prendre en compte car au final je me retrouve avec des jeux d'image de 1 pixels à la fin et il y a plus aucune information
+dedans donc on fait du pooling pour avoir max 7 pixels à la fin.
+
+Du coup ici nouveau model profond avec 10 couches de conv et du pooling toutes les 2 couches 
+
+Au début les résulatts sont nuls : 
+Epoch [73], Train Loss: 1.7726, Valid Loss: 1.7856,           Train Acc: 24.00%, Valid Acc: 23.70%
+⏸️ Pas d'amélioration depuis 20 epoch(s)
+🛑 Early stopping déclenché
+
+on voit bien que le model n'apprend rien. J'ajoute donc une normalisation autour de 0 donc [-1,1]
+-> Aucune diff j'ai changé le learning rate de 0,001 à 0,0003
+
+pour conv10_normalized avec LR = 0,0003 et sans scheduler 
+Epoch [28], Train Loss: 0.2249, Valid Loss: 2.7124,           Train Acc: 93.46%, Valid Acc: 58.96%
+⏸️ Pas d'amélioration depuis 20 epoch(s)
+🛑 Early stopping déclenché
+
+----- ✅ Evaluation terminée -----
+Classification Accuracy: 57.83%
+SmoothL1 Loss Moyenne par point: 0.021670
+
+
+Ajout d'un scheduler et en gardant la normalisation
+
+Avec un LR de 0.0003 et scheduler factor 0.8 -> conv10_normalized_schdule
+Epoch [41], Train Loss: 0.3347, Valid Loss: 2.3839,           Train Acc: 88.08%, Valid Acc: 69.36%
+⏸️ Pas d'amélioration depuis 20 epoch(s)
+🛑 Early stopping déclenché
+
+----- ✅ Evaluation terminée -----
+Classification Accuracy: 51.81%
+SmoothL1 Loss Moyenne par point: 0.018836
+
+Conclusion on garde toujours le LR de 0,0003 pour point de départ 
+
+ATTENTION IMPORTANT 
+il faut bien dire de le rapport que ici on fait une loss total qui somme la loss de la detection et celle de la classification 
+donc ça veut dire que ce qui est eralyr stop et scheduler se base sur le total. On peut donc s'ameliorer sur le clasification et 
+diminué sur la detection se qui fera stganer le total et entrainemra une fin du train alors que le model apprend encore 
+
+On peut aussi dire qu'on a pas de data augmentation et que ça peut epxliquer qu'on est des moins bon resulats pour la classfication que quand on a le model de classification seul avec la data augmtentation
+
+
+
+Prochain test, pas de early stop. Scheduler avec factor = 0.9 et une patiente de 10    --conv10_normlized_1000epochs
+📉 Learning Rate actuel: 0.000002
+Epoch [361], Train Loss: 0.0144, Valid Loss: 11.5874,           Train Acc: 99.61%, Valid Acc: 65.90%
+⏸️ Pas d'amélioration depuis 321 epoch(s)
+
+On peut voir les limites du model car il appris l'entrainenment par coeur mais la validation n'est pas encore parfaite. 
+bloqué dans un mimimum local 
+
+
+On va tester un droptout de 0.7 au lieu de 0.5 --> conv10_normalized_schdule_0.7dp
+📉 Learning Rate actuel: 0.000219
+Epoch [65], Train Loss: 1.7772, Valid Loss: 1.7847,           Train Acc: 24.00%, Valid Acc: 23.70%
+⏸️ Pas d'amélioration depuis 25 epoch(s)
+🛑 Early stopping déclenché
+
+
+test dropout 0.6 --> conv10_normalized_schdule_0.6dp
+📉 Learning Rate actuel: 0.000243
+Epoch [61], Train Loss: 0.1293, Valid Loss: 3.5536,           Train Acc: 94.84%, Valid Acc: 68.21%
+⏸️ Pas d'amélioration depuis 25 epoch(s)
+🛑 Early stopping déclenché

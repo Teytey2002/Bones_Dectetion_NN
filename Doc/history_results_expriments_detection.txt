@@ -63,3 +63,24 @@ scheduler = optim.lr_scheduler.ReduceLROnPlateau(
 
 
 We keep the ReduceLROnPlateau
+
+
+Try with image size = 800 and batch size 16 
+✅ Evaluation terminée :
+ - MSE moyen des polygones : 0.027655
+ - Distance moyenne entre points : 0.132542
+
+test with normalization and size of 800 and batch of 16
+✅ Evaluation terminée :
+ - MSE moyen des polygones : 0.027756
+ - Distance moyenne entre points : 0.131692
+
+test with normalization and colorjiter and size of 800 and batch of 32
+✅ Evaluation terminée :
+ - MSE moyen des polygones : 0.028365
+ - Distance moyenne entre points : 0.134004
+
+test with data augmentation image size of 640 and batch of 32   --> 640ImageSize_dataAugm
+
+
+Finish par un train_loop avec image size of 640 and batch of 32 and normalization but no dataaugmentation 

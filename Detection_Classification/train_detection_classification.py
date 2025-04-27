@@ -2,8 +2,8 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 import os
-from data_loader_detection import train_loader, valid_loader
-from model_multitask import BoneFractureMultiTaskNet
+from data_loader_detection_classification import train_loader, valid_loader
+from model_detection_classification import BoneFractureMultiTaskDeepNet
 from torch.utils.tensorboard import SummaryWriter
 
 # Configuration 
@@ -11,24 +11,21 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(f"Training on: {device}")
 
 # Initialisation du modèle
-model = BoneFractureMultiTaskNet(num_classes=7, num_points=4).to(device)
-
-# Fonctions de perte pour les deux tâches
+model = BoneFractureMultiTaskDeepNet(num_classes=7, num_points=4).to(device)
 criterion_class = nn.CrossEntropyLoss()
-criterion_bbox = nn.MSELoss()
-
-# Optimiseur
-optimizer = optim.Adam(model.parameters(), lr=0.001)
+criterion_bbox = nn.SmoothL1Loss()
+optimizer = optim.Adam(model.parameters(), lr=0.0003)
+scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min', factor=0.9, patience=10, verbose=True)
 
 # TensorBoard
-writer = SummaryWriter(log_dir="runs_multitask/bone_fracture_multitask")
+writer = SummaryWriter(log_dir="runs_multitask/bone_fracture_multitask_conv10_normalized_schedule_0.6dp")
 
 # Early stopping
-patience = 20
+patience = 25
 best_val_loss = float("inf")
 epochs_no_improve = 0
 epoch = 0
-model_path = "models/Multitask/bone_fracture_multitask.pth"
+model_path = "models/Detection_Classification/bone_fracture_multitask_conv10_normalized_schedule_0.6dp.pth"
 os.makedirs(os.path.dirname(model_path), exist_ok=True)
 
 # Entraînement
@@ -88,12 +85,18 @@ while True:
 
     valid_epoch_loss = valid_loss / len(valid_loader)
     valid_epoch_accuracy = 100 * valid_correct / valid_total
+    scheduler.step(valid_epoch_loss)
+    current_lr = optimizer.param_groups[0]['lr']
+    print(f"📉 Learning Rate actuel: {current_lr:.6f}")
+
 
     # TensorBoard recording
     writer.add_scalar("Loss/train", epoch_loss, epoch)
     writer.add_scalar("Loss/valid", valid_epoch_loss, epoch)
     writer.add_scalar("Accuracy/train", epoch_accuracy, epoch)
     writer.add_scalar("Accuracy/valid", valid_epoch_accuracy, epoch)
+    writer.add_scalar("LearningRate", current_lr, epoch)
+
 
     print(f"Epoch [{epoch+1}], Train Loss: {epoch_loss:.4f}, Valid Loss: {valid_epoch_loss:.4f}, \
           Train Acc: {epoch_accuracy:.2f}%, Valid Acc: {valid_epoch_accuracy:.2f}%")

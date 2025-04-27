@@ -12,14 +12,14 @@ print(f"Training on: {device}")
 model = PolygonDetector(num_points=4).to(device)
 criterion = nn.SmoothL1Loss()
 optimizer = optim.Adam(model.parameters(), lr=0.001)
-scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min', patience=6, factor=0.8, verbose=True, threshold=1e-4)
-writer = SummaryWriter(log_dir="runs_detection/polygon_detector_ReduceLROnPlateau_2_withoutDA")    # Tensorboard
+scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min', patience=10, factor=0.9, verbose=True, threshold=1e-4)
+writer = SummaryWriter(log_dir="runs_detection/polygon_detector_ReduceLROnPlateau_640ImageSize_dataAugm")    # Tensorboard
 
 patience = 20
 best_val_loss = float("inf")
 epochs_no_improve = 0
 epoch = 0
-model_path = "models/Detection/polygon_detector_ReduceLROnPlateau_2_withoutDA.pth"
+model_path = "models/Detection/polygon_detector_ReduceLROnPlateau_640ImageSize_dataAugm.pth"
 
 # Train with Early stop
 while True:

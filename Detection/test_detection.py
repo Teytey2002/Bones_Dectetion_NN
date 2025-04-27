@@ -10,7 +10,7 @@ from polygon_detection_model import PolygonDetector
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model = PolygonDetector(num_points=4).to(device)
 
-model.load_state_dict(torch.load("models/Detection/polygon_detector_ReduceLROnPlateau_2.pth", map_location=device))
+model.load_state_dict(torch.load("models/Detection/polygon_detector_ReduceLROnPlateau_800ImageSize_normalised_colorjiter.pth", map_location=device))
 model.eval()
 
 # Evaluation sur tout le test set
