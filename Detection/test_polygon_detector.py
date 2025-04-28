@@ -4,16 +4,21 @@ import matplotlib.patches as patches
 from torchvision import transforms
 from data_loader_detection import test_dataset
 from polygon_detection_model import PolygonDetector
+import numpy as np
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(f"Testing on: {device}")
 
 model = PolygonDetector(num_points=4).to(device)
-model.load_state_dict(torch.load("models/Detection/polygon_detector_ReduceLROnPlateau_2.pth", map_location=device))
+model.load_state_dict(torch.load("models/Detection/loop/polygon_detector_best_model.pth", map_location=device))
 model.eval()
 
 def show_result(image, label, pred_bbox):
     image = image.permute(1, 2, 0).numpy()
+    
+    image = (image * 0.5) + 0.5
+    image = np.clip(image, 0, 1)
+
     fig, ax = plt.subplots(1)
     ax.imshow(image)
 

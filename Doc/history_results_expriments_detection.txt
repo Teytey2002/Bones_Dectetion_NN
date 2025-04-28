@@ -1,4 +1,4 @@
-Work on architecture 
+Work on architecture with MSE criterion
 
 For conv3 withh da
 ✅ Evaluation terminée :
@@ -81,6 +81,22 @@ test with normalization and colorjiter and size of 800 and batch of 32
  - Distance moyenne entre points : 0.134004
 
 test with data augmentation image size of 640 and batch of 32   --> 640ImageSize_dataAugm
-
+✅ Evaluation terminée :
+ - MSE moyen des polygones : 0.031593
+ - Distance moyenne entre points : 0.144554
 
 Finish par un train_loop avec image size of 640 and batch of 32 and normalization but no dataaugmentation 
+📊 Résultats résumés :
+ - polygon_detector_best_2025-04-27_22-38-59.pth : MSE = 0.026776, Distance = 0.130566
+ - polygon_detector_best_2025-04-27_22-55-58.pth : MSE = 0.028050, Distance = 0.133157
+ - polygon_detector_best_2025-04-27_23-10-55.pth : MSE = 0.027736, Distance = 0.130745
+ - polygon_detector_best_2025-04-27_23-26-46.pth : MSE = 0.025986, Distance = 0.127001
+ - polygon_detector_best_2025-04-27_23-42-21.pth : MSE = 0.029449, Distance = 0.135356
+ - polygon_detector_best_2025-04-27_23-56-06.pth : MSE = 0.028222, Distance = 0.133005
+ - polygon_detector_best_2025-04-28_00-11-13.pth : MSE = 0.027920, Distance = 0.131995
+ - polygon_detector_best_2025-04-28_00-24-52.pth : MSE = 0.027274, Distance = 0.132388
+ - polygon_detector_best_2025-04-28_00-38-30.pth : MSE = 0.028551, Distance = 0.133910
+ - polygon_detector_best_2025-04-28_00-52-09.pth : MSE = 0.028174, Distance = 0.135084
+ - polygon_detector_best_2025-04-28_01-05-18.pth : MSE = 0.027878, Distance = 0.133789
+
+ on prendra donc le polygon_detector_best_model comme étant polygon_detector_best_2025-04_23-26-46.pth : MSE = 0.025986, Distance = 0.127001

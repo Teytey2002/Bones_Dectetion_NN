@@ -4,6 +4,8 @@ from torch.utils.data import Dataset, DataLoader
 from torchvision import transforms
 from PIL import Image
 from custom_transform_augmented import CustomTransform, CustomTestTransform
+import matplotlib.pyplot as plt
+import numpy as np
 image_size = 640   # Before was 224
 batch_size = 32    # Before was 32
 
@@ -76,3 +78,17 @@ valid_loader = DataLoader(valid_dataset, batch_size=batch_size, shuffle=False)
 
 test_dataset = PolygonDetectionDataset(root_dir=data_dir_test, transform=test_transform)
 test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
+
+## Print images of test dataset to see results 
+#if __name__ == "__main__":
+#   
+#    for i in range(15):
+#        image, label = test_dataset[i]
+#        image = image.permute(1, 2, 0).numpy()
+#        
+#        # Unnormalize pour afficher correctement
+#        image = (image * 0.5) + 0.5
+#        image = np.clip(image, 0, 1)
+#        plt.imshow(image)
+#        plt.title(f"Label: {label}")
+#        plt.show()
