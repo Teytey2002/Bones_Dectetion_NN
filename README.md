@@ -39,7 +39,7 @@ Bones_Dectetion_NN/
 │   └── data_loader_detection_classification.py
 │   └── dual_prediction_separated.py          # Separate model dual prediction
 |
-├── Detection_Classification/
+├── YOLLOv8/
 │   ├── yollov8_test.py     # test script
 │   ├── yollov8_train.py      # training script
 │   ├── yollov8_visualization_test.py     # Visualize predictions
