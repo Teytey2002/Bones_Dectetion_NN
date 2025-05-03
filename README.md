@@ -37,16 +37,20 @@ Bones_Dectetion_NN/
 │   ├── test_detection_classification.py      # Multitask model evaluation
 │   ├── model_detection_classification.py     # Multitask CNN architecture
 │   └── data_loader_detection_classification.py
-│
-├── Dual/
 │   └── dual_prediction_separated.py          # Separate model dual prediction
-│
-├── utils/
-│   └── test_bounding_boxes.py       # Label visualization helper
-│
+|
+├── Detection_Classification/
+│   ├── yollov8_test.py     # test script
+│   ├── yollov8_train.py      # training script
+│   ├── yollov8_visualization_test.py     # Visualize predictions
+|
+├── Doc/
+|    ├── Bones_Detection_Report.pdf       # Full project report (PDF)
+│    ...
+|
 ├── models/                          # Saved models
 ├── runs*/                           # TensorBoard logs
-├── Bones_Detection_Report.pdf       # Full project report (PDF)
+
 ```
 
 ## 🧠 Models
