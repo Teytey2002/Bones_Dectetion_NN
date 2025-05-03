@@ -144,8 +144,9 @@ tensorboard --logdir="runs/"
 |-----------------------|----------|---------------------------|------------------------------------|
 | Classification-only   | 85.54%   | ❌                        | Best for classification            |
 | Detection-only        | ❌       | Avg. dist = 0.127         | Precise polygon predictions        |
-| Multitask Model       | 68.21%   | SmoothL1 ≈ 0.015          | Joint classification + detection   |
+| Multitask Model       | 59.04%   | Avg. dist = 0.14          | Joint classification + detection   |
 | YOLOv8n               | -        | mAP@0.5 = 19.9%           | Lightweight, low accuracy          |
+| YOLOv8s               | -        | mAP@0.5 = 13.5%           | Lightweight, low accuracy          |
 
 ## 📄 Report
 
