@@ -155,8 +155,8 @@ A full scientific report of this project is available here: [`Bones_Detection_Re
 ## 📚 References
 
 - [Bone Fracture Detection Dataset - Kaggle](https://www.kaggle.com/datasets/pkdarabi/bone-fracture-detection-computer-vision-project)
-- Simonyan & Zisserman (2015) — Very Deep Conv Nets
-- Lundervold & Lundervold (2020) — Deep Learning in Medical Imaging
+- [Simonyan & Zisserman (2015) — Very Deep Conv Nets](https://arxiv.org/abs/1409.1556) 
+- [Lundervold & Lundervold (2020) — Deep Learning in Medical Imaging](https://www.sciencedirect.com/science/article/pii/S0895611120300197)
 
 ---
 
