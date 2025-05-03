@@ -10,7 +10,7 @@ import matplotlib.patches as patches
 import torchvision.transforms.functional as TF
 
 # Définition des transformations (Data Augmentation + Normalisation)
-image_size = 224  
+image_size = 224
 batch_size = 32   
 
 transform = transforms.Compose([

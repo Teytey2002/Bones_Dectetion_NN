@@ -2,6 +2,7 @@ import torch
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 import torch.nn as nn
+import numpy as np
 from data_loader_detection_classification import test_loader, test_dataset
 from model_detection_classification import BoneFractureMultiTaskDeepNet
 
@@ -10,7 +11,7 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # Charger le modèle multitâche
 model = BoneFractureMultiTaskDeepNet(num_classes=7, num_points=4).to(device)
-model.load_state_dict(torch.load("models/Detection_Classification/bone_fracture_multitask_conv10_normalized_schedule.pth", map_location=device))
+model.load_state_dict(torch.load("models/Detection_Classification/bone_fracture_multitask_conv10_normalized_schedule_0.6dp.pth", map_location=device))
 model.eval()
 
 # Liste des classes
@@ -20,6 +21,8 @@ class_names = ['elbow positive', 'fingers positive', 'forearm fracture',
 # Fonction pour affichage comparatif
 def show_comparison(image, label, class_pred, bbox_pred):
     image_np = image.permute(1, 2, 0).numpy()
+    image_np = (image_np * 0.5) + 0.5
+    image_np = np.clip(image_np, 0, 1)
     fig, axs = plt.subplots(1, 2, figsize=(10, 5))
 
     width, height = image_np.shape[1], image_np.shape[0]
@@ -45,16 +48,16 @@ def show_comparison(image, label, class_pred, bbox_pred):
     plt.show()
 
 # --- Partie 1 : Affichage de quelques images ---
-#for i in range(5):
-#    image, label = test_dataset[i]
-#    image_input = image.unsqueeze(0).to(device)
-#
-#    with torch.no_grad():
-#        class_output, bbox_output = model(image_input)
-#        class_pred = torch.argmax(class_output, dim=1).item()
-#        bbox_pred = bbox_output.squeeze().cpu().numpy()
-#
-#    show_comparison(image, label, class_pred, bbox_pred)
+for i in range(5):
+    image, label = test_dataset[i]
+    image_input = image.unsqueeze(0).to(device)
+
+    with torch.no_grad():
+        class_output, bbox_output = model(image_input)
+        class_pred = torch.argmax(class_output, dim=1).item()
+        bbox_pred = bbox_output.squeeze().cpu().numpy()
+
+    show_comparison(image, label, class_pred, bbox_pred)
 
 # --- Partie 2 : Évaluation sur tout le test_loader ---
 correct = 0

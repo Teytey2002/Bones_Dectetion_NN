@@ -3,7 +3,7 @@ import torch
 from torch.utils.data import Dataset, DataLoader
 from torchvision import transforms
 from PIL import Image
-from custom_transform_augmented import CustomTransform, CustomTestTransform
+#from custom_transform_augmented import CustomTransform, CustomTestTransform
 import matplotlib.pyplot as plt
 import numpy as np
 image_size = 640   # Before was 224

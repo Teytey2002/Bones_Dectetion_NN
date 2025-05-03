@@ -69,6 +69,9 @@ Prochain test, pas de early stop. Scheduler avec factor = 0.9 et une patiente de
 📉 Learning Rate actuel: 0.000002
 Epoch [361], Train Loss: 0.0144, Valid Loss: 11.5874,           Train Acc: 99.61%, Valid Acc: 65.90%
 ⏸️ Pas d'amélioration depuis 321 epoch(s)
+----- ✅ Evaluation terminée -----
+Classification Accuracy: 60.24%
+SmoothL1 Loss Moyenne par point: 0.027080
 
 On peut voir les limites du model car il appris l'entrainenment par coeur mais la validation n'est pas encore parfaite. 
 bloqué dans un mimimum local 
@@ -86,3 +89,6 @@ test dropout 0.6 --> conv10_normalized_schdule_0.6dp
 Epoch [61], Train Loss: 0.1293, Valid Loss: 3.5536,           Train Acc: 94.84%, Valid Acc: 68.21%
 ⏸️ Pas d'amélioration depuis 25 epoch(s)
 🛑 Early stopping déclenché
+----- ✅ Evaluation terminée -----
+Classification Accuracy: 59.04%
+SmoothL1 Loss Moyenne par point: 0.015221
