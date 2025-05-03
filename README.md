@@ -135,7 +135,7 @@ python test_detection_classification.py
 ### Visualize logs:
 
 ```bash
-tensorboard --logdir runs/
+tensorboard --logdir="runs/"
 ```
 
 ## 📈 Results
