@@ -5,6 +5,8 @@ import torch.nn as nn
 import numpy as np
 from data_loader_detection_classification import test_loader, test_dataset
 from model_detection_classification import BoneFractureMultiTaskDeepNet
+from sklearn.metrics import mean_squared_error
+from tqdm import tqdm
 
 # Config
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -60,18 +62,16 @@ for i in range(5):
     show_comparison(image, label, class_pred, bbox_pred)
 
 # --- Partie 2 : Évaluation sur tout le test_loader ---
+all_mse = []
+all_distances = []
 correct = 0
 total = 0
-smooth_l1_loss = nn.SmoothL1Loss(reduction='sum')
-total_bbox_loss = 0.0
-
-model.eval()
 
 with torch.no_grad():
-    for images, labels in test_loader:
+    for images, labels in tqdm(test_loader, desc="Evaluation Multitâche"):
         images, labels = images.to(device), labels.to(device)
         class_labels = labels[:, 0].long()
-        bbox_labels = labels[:, 1:]
+        true_coords = labels[:, 1:]
 
         class_preds, bbox_preds = model(images)
 
@@ -80,13 +80,23 @@ with torch.no_grad():
         correct += (predicted_classes == class_labels).sum().item()
         total += class_labels.size(0)
 
-        # Détection
-        total_bbox_loss += smooth_l1_loss(bbox_preds, bbox_labels).item()
+        # Détection : comparaison image par image
+        for i in range(images.size(0)):
+            true = true_coords[i].cpu().numpy()
+            pred = bbox_preds[i].cpu().numpy()
 
-# Résultats
+            mse = mean_squared_error(true, pred)
+            dist = np.mean(np.sqrt((np.array(true) - np.array(pred))**2))
+
+            all_mse.append(mse)
+            all_distances.append(dist)
+
+# Résumé des métriques
+avg_mse = np.mean(all_mse)
+avg_dist = np.mean(all_distances)
 accuracy = 100 * correct / total
-avg_bbox_loss = total_bbox_loss / (total * 8)  # 8 coordonnées par sample
 
-print("\n----- ✅ Evaluation terminée -----")
-print(f"Classification Accuracy: {accuracy:.2f}%")
-print(f"SmoothL1 Loss Moyenne par point: {avg_bbox_loss:.6f}")
+print(f"\n----- ✅ Évaluation multitâche terminée -----")
+print(f" - Classification Accuracy : {accuracy:.2f}%")
+print(f" - MSE moyen des polygones : {avg_mse:.6f}")
+print(f" - Distance moyenne entre points (normalisée) : {avg_dist:.6f}")
